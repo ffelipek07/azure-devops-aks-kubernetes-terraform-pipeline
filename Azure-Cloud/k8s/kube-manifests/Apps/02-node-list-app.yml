@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-node-list
+  labels:
+    app: hpa-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hpa-node
+  template:
+    metadata:
+      labels:
+        app: hpa-node
+    spec:
+      containers:
+      - name: hpa-node
+        image: ffelipek07/image-node-list:v1 # Public Image 
+        ports:
+        - containerPort: 3081
+        env:
+        - name: SAS
+          valueFrom:
+            secretKeyRef:
+              name: node-sas-secrets
+              key: sas_password
+        resources:
+          requests:
+            memory: "56Mi"
+            cpu: "50m"
+          limits:
+            memory: "100Mi"
+            cpu: "100m"          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-node-list
+  labels:
+    app: hpa-node
+spec:
+  type: LoadBalancer
+  selector:
+    app: hpa-node
+  ports:
+  - port: 80
+    targetPort: 3081
+   

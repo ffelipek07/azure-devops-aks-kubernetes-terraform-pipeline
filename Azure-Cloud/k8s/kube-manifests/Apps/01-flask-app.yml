@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-flask-db
+  labels:
+    app: hpa-flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hpa-flask
+  template:
+    metadata:
+      labels:
+        app: hpa-flask
+    spec:
+      containers:
+      - name: hpa-flask
+        image: ffelipek07/image-flask-db:v1 # Public Image 
+        ports:
+        - containerPort: 3081
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db-secrets
+              key: db_root_password
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "500Mi"
+            cpu: "200m"          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-flask-db
+  labels:
+    app: hpa-flask
+spec:
+  type: LoadBalancer
+  selector:
+    app: hpa-flask
+  ports:
+  - port: 80
+    targetPort: 3081
+   
