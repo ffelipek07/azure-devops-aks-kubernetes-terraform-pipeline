@@ -1,4 +1,4 @@
-- [Natura DevOps - Fernando Kuss](#devops)
+- [DevOps - Fernando Kuss](#devops)
 - [Índice](#índice)
 
 
